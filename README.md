@@ -9,7 +9,8 @@ L'intégration des énergies renouvelables (EnR) dans le réseau électrique (Gr
 
 L'objectif est d'estimer la fonction de transfert $f$ telle que :  
 ```math
-\hat{Y}_{t+h} = f(Y_{t}, Y_{t-1}, \dots, X_{t+h}) + \epsilon_t```
+\hat{Y}_{t+h} = f(Y_{t}, Y_{t-1}, \dots, X_{t+h}) + \epsilon_t
+```
 Où :
 * $Y_t$ est la production réelle en MW (Source : RTE, périmètre Île-de-France).
 * $X_t$ est le vecteur d'état météorologique à Paris (GHI, Température, Nébulosité).
