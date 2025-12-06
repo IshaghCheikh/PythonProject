@@ -7,8 +7,8 @@ Ce projet propose une chaîne de traitement complète (pipeline) pour la modéli
 
 L'intégration des énergies renouvelables (EnR) dans le réseau électrique (Grid) pose un problème d'optimisation sous incertitude. La production photovoltaïque $Y_t$ est un processus stochastique non-stationnaire dépendant de variables exogènes météorologiques $X_t$.
 
-L'objectif est d'estimer la fonction de transfert $f$ telle que :
-$$  
+L'objectif est d'estimer la fonction de transfert $f$ telle que :  
+$$
 \hat{Y}_{t+h} = f(Y_{t-k}, \dots, Y_t, X_{t+h}^{forecast}) + \epsilon_t
 $$
 
