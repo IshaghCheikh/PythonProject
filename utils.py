@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import xgboost as xgb
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 def prod_ete_hiver(start_summer , end_summer, start_winter, end_winter, df , ylabel):
     
@@ -474,3 +476,162 @@ def plot_scree_plot(pca):
     plt.show()
 
 
+def plot_pca(y_test, y_pred):
+    plt.figure(figsize=(12, 6))
+    plt.plot(y_test.index, y_test.values, label='Actual (y_test)', alpha=0.7, linewidth=0.8)
+    plt.plot(y_test.index, y_pred, label='Predicted (y_pred)', alpha=0.7, linewidth=0.8)
+    plt.xlabel('Time')
+    plt.ylabel('Load Factor')
+    plt.title('Actual vs Predicted Load Factor on Test Set')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+def plot_lasso_prediction(y_test, y_pred_l1):
+    plt.figure(figsize=(15, 6))
+    plt.plot(y_test.index, y_test.values, label='Réel (2023)', color='black', alpha=0.8, linewidth=2)
+    plt.plot(y_test.index, y_pred_l1, label='Lasso (L1)', color='blue', alpha=0.7, linestyle='--')
+    plt.title("Réel vs Prédiction Lasso (L1) - Janvier 2023")
+    plt.xlabel("Date")
+    plt.ylabel("Load Factor")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()    
+
+
+def plot_xgboost(y_test, y_pred_xgb, model_xgb):
+    # Affichage de l'importance des variables
+    plt.figure(figsize=(10, 6))
+    xgb.plot_importance(model_xgb, max_num_features=15, height=0.5)
+    plt.title("Importance des Variables (Feature Importance)")
+    plt.show()
+
+    # Visualisation Prédiction vs Réalité sur tout le jeu de test
+    plt.figure(figsize=(15, 6))
+    plt.plot(y_test.index, y_test.values, label='Réel (2023)', color='black', alpha=0.6)
+    plt.plot(y_test.index, y_pred_xgb, label='XGBoost', color='red', alpha=0.6, linestyle='--')
+    plt.title("Prédiction Solaire : Réel vs XGBoost (2023 complet)")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+    # Visualisation Prédiction vs Réalité
+    plt.figure(figsize=(15, 6))
+    # On affiche seulement le premier mois de 2023 pour y voir clair
+    limit = 24 * 30 
+    plt.plot(y_test.index[:limit], y_test.values[:limit], label='Réel (2023)', color='black', alpha=0.7)
+    plt.plot(y_test.index[:limit], y_pred_xgb[:limit], label='XGBoost', color='red', alpha=0.7, linestyle='--')
+    plt.title("Prédiction Solaire : Réel vs XGBoost (Janvier 2023)")
+    plt.legend()
+    plt.show()
+
+
+def plot_rf(y_test,y_pred_rf, model_rf,x_train):
+    # Affichage de l'importance des variables
+    plt.figure(figsize=(10, 6))
+    feature_importance = pd.DataFrame({
+        'feature': x_train.columns,
+        'importance': model_rf.feature_importances_
+    }).sort_values('importance', ascending=False)
+
+    plt.barh(feature_importance['feature'].head(15), feature_importance['importance'].head(15))
+    plt.xlabel('Importance')
+    plt.title("Importance des Variables (Feature Importance) - Random Forest")
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.show()
+
+    # Visualisation Prédiction vs Réalité sur tout le jeu de test
+    plt.figure(figsize=(15, 6))
+    plt.plot(y_test.index, y_test.values, label='Réel (2023)', color='black', alpha=0.6)
+    plt.plot(y_test.index, y_pred_rf, label='Random Forest', color='green', alpha=0.6, linestyle='--')
+    plt.title("Prédiction Solaire : Réel vs Random Forest (2023 complet)")
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+    # Visualisation Prédiction vs Réalité
+    plt.figure(figsize=(15, 6))
+    # On affiche seulement le premier mois de 2023 pour y voir clair
+    limit = 24 * 30 
+    plt.plot(y_test.index[:limit], y_test.values[:limit], label='Réel (2023)', color='black', alpha=0.7)
+    plt.plot(y_test.index[:limit], y_pred_rf[:limit], label='Random Forest', color='green', alpha=0.7, linestyle='--')
+    plt.title("Prédiction Solaire : Réel vs Random Forest (Janvier 2023)")
+    plt.legend()
+    plt.show()
+
+def compare_models(y_test, y_pred_xgb, y_pred_rf, test_results_df, y_pred, mse_rf, mae_rf):
+    # Tableau comparatif des performances
+
+    comparison = pd.DataFrame({
+        'Modèle': ['XGBoost', 'Random Forest'],
+        'MSE': [mean_squared_error(y_test, y_pred_xgb), mse_rf],
+        'MAE': [mean_absolute_error(y_test, y_pred_xgb), mae_rf]
+    })
+
+
+    # Add R² scores to comparison for all models
+    comparison['R²'] = [r2_score(y_test, y_pred_xgb), r2_score(y_test, y_pred_rf)]
+
+    # Include regularized models and PCA results
+
+    all_models_comparison = pd.DataFrame({
+        'Modèle': ['Ridge (L2)', 'Lasso (L1)', 'ElasticNet', 'PCA', 'XGBoost', 'Random Forest'],
+        'MSE': [
+            test_results_df.loc[test_results_df['Modèle'] == 'Ridge (L2)', 'MSE'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'Lasso (L1)', 'MSE'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'ElasticNet', 'MSE'].values[0],
+            mean_squared_error(y_test, y_pred),  # PCA predictions from CELL INDEX 0
+            mean_squared_error(y_test, y_pred_xgb),
+            mse_rf
+        ],
+        'MAE': [
+            test_results_df.loc[test_results_df['Modèle'] == 'Ridge (L2)', 'MAE'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'Lasso (L1)', 'MAE'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'ElasticNet', 'MAE'].values[0],
+            mean_absolute_error(y_test, y_pred),  # PCA predictions from CELL INDEX 0
+            mean_absolute_error(y_test, y_pred_xgb),
+            mae_rf
+        ],
+        'R²': [
+            test_results_df.loc[test_results_df['Modèle'] == 'Ridge (L2)', 'R²'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'Lasso (L1)', 'R²'].values[0],
+            test_results_df.loc[test_results_df['Modèle'] == 'ElasticNet', 'R²'].values[0],
+            r2_score(y_test, y_pred),  # PCA predictions from CELL INDEX 0
+            r2_score(y_test, y_pred_xgb),
+            r2_score(y_test, y_pred_rf)
+        ]
+    })
+    print("\n" + "="*70)
+    print("COMPARAISON COMPLÈTE DE TOUS LES MODÈLES")
+    print("="*70)
+    print(all_models_comparison.to_string(index=False))
+    print("="*70)
+
+    # Visualisation comparative
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+
+    models_names = all_models_comparison['Modèle']
+    colors = ['#FF6B6B', '#FF6B6B', '#FF6B6B', '#4ECDC4', '#E74C3C', '#27AE60']
+
+    axes[0].barh(models_names, all_models_comparison['MSE'], color=colors, alpha=0.8)
+    axes[0].set_xlabel('MSE')
+    axes[0].set_title('Mean Squared Error')
+    axes[0].grid(axis='x', alpha=0.3)
+
+    axes[1].barh(models_names, all_models_comparison['MAE'], color=colors, alpha=0.8)
+    axes[1].set_xlabel('MAE')
+    axes[1].set_title('Mean Absolute Error')
+    axes[1].grid(axis='x', alpha=0.3)
+
+    axes[2].barh(models_names, all_models_comparison['R²'], color=colors, alpha=0.8)
+    axes[2].set_xlabel('R²')
+    axes[2].set_title('R² Score (plus élevé = mieux)')
+    axes[2].grid(axis='x', alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()    

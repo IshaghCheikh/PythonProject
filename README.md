@@ -13,7 +13,7 @@ L'objectif est d'estimer la fonction de transfert $f$ telle que :
 ```
 Où :
 * $Y_t$ est la production réelle en MW (Source : RTE, périmètre Île-de-France).
-* $X_t$ est le vecteur d'état météorologique à Paris (GHI, Température, Nébulosité).
+* $X_t$ est le vecteur d'état météorologique à Paris,Marseille,Bordeaux,Nantes,Lyon(GHI, Température, Nébulosité).
 * $\epsilon_t$ est le terme d'erreur que nous cherchons à minimiser (RMSE).
 
 ### 2. Architecture du Projet
@@ -24,9 +24,9 @@ Le projet est structuré pour une exécution linéaire via un unique point d'ent
 solar-forecasting-paris/
 ├── data/                  # Dossier de stockage (géré automatiquement)
 ├── src/                   # Modules Python (Backend scientifique)
-│   ├── data_loader.py     # Clients API (Open-Meteo & ODRÉ)
-│   ├── processing.py      # Nettoyage et Feature Engineering
-│   └── modeling.py        # Définition des modèles (XGBoost/LSTM)
+│   ├── load_exp_data.py     # Clients API (Open-Meteo & ODRÉ)
+│   ├── prepare_data.py      # Nettoyage et Feature Engineering
+│   └── process_data.py        # Définition des modèles (XGBoost/LSTM)
 ├── main.ipynb             # LE notebook d'exécution unique
 ├── utils.py               # Les outils que nous allons appeler dans le main
 └── README.md              # Ce fichier
