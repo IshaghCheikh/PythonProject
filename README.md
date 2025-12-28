@@ -31,31 +31,32 @@ solar-forecasting-paris/
 ├── utils.py               # Les outils que nous allons appeler dans le main
 └── README.md              # Ce fichier
 
+```
 
-## 3. Pipeline de Traitement
+### 3. Pipeline de Traitement
 
-### 3.1. Acquisition des Données
+#### 3.1. Acquisition des Données
 * **Production** : RTE via ODRÉ (Île-de-France, 30min, 2018-2023)
 * **Météo** : Open-Meteo API (GHI, DNI, DHI, T, Vent, Cloud) - Paris, Marseille, Bordeaux
 * **Fusion** : Jointure temporelle
 
-### 3.2. Analyse Exploratoire (EDA)
+#### 3.2. Analyse Exploratoire (EDA)
 * Visualisations temporelles (cycles diurnes/saisonniers)
 * Statistiques descriptives et distributions
 * Détection de la non-stationnarité
 
-### 3.3. Prétraitement
+#### 3.3. Prétraitement
 * **Capacité installée** : Récupération via API ODRÉ
 * **Load Factor** : `Production / Capacité` (normalisation 0-1)
 * **Nettoyage** : Correction des valeurs aberrantes
 
-### 3.4. Feature Engineering
+#### 3.4. Feature Engineering
 * **Target** : Production à t+1h
 * **Lags** : [30min, 1h, 3h, 6h, 12h, 24h] sur production et météo
 * **Rolling stats** : mean, std, max, min sur [1h, 3h, 24h]
 * **Calendaires** : hour, day_of_week, month, day_of_year
 
-### 3.5. Modélisation
+#### 3.5. Modélisation
 * **Split temporel** : 80% train / 20% test (pas de shuffle)
 * **Baseline** : Modèle de persistance
 * **Modèles testés** :
@@ -64,7 +65,7 @@ solar-forecasting-paris/
   - **XGBoost** (n=1000, lr=0.05, depth=6)
   - **Random Forest** (n=1000, depth=15)
 
-### 3.6. Évaluation
+#### 3.6. Évaluation
 * **Métriques** : RMSE, MAE
 * **Feature importance** : Top 15 variables
 * **Visualisations** : Réel vs Prédit (année complète + zoom)
