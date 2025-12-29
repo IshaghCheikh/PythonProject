@@ -13,7 +13,7 @@ L'objectif est d'estimer la fonction de transfert $f$ telle que :
 ```
 Où :
 * $Y_t$ est la production réelle en MW (Source : RTE, périmètre Île-de-France).
-* $X_t$ est le vecteur d'état météorologique à Paris (GHI, Température, Nébulosité).
+* $X_t$ est le vecteur d'état météorologique à Paris,Marseille,Bordeaux,Nantes,Lyon(GHI, Température, Nébulosité).
 * $\epsilon_t$ est le terme d'erreur que nous cherchons à minimiser (RMSE).
 
 ### 2. Architecture du Projet
