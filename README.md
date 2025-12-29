@@ -27,8 +27,9 @@ solar-forecasting-paris/
 │   ├── data_loader.py     # Clients API (Open-Meteo & ODRÉ)
 │   ├── processing.py      # Nettoyage et Feature Engineering
 │   └── modeling.py        # Définition des modèles (XGBoost/LSTM)
-├── main.ipynb             # LE notebook d'exécution unique
-├── utils.py               # Les outils que nous allons appeler dans le main
+├── main.ipynb             # Le notebook d'exécution unique
+├── utils.py               # Les fonctions que nous allons appeler dans le main 
+├── requirements.txt       # Les librairies avec lesquelles nous allons travailler
 └── README.md              # Ce fichier
 
 ```
